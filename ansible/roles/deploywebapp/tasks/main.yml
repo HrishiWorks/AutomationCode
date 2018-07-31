@@ -1,0 +1,14 @@
+---
+- name: copy template
+  template:
+    src: deploy.py
+    dest: /opt/IBM/WebSphere/AppServer/profiles/{{profile}}/bin/deploy.py
+    mode: 0644
+  tags: [deploy_app,copy_template]
+  
+- name: run deployment jython script
+  shell: "/opt/IBM/WebSphere/AppServer/profiles/{{ profile }}/bin/wsadmin.sh -host {{was_hostname}} -f /opt/IBM/WebSphere/AppServer/profiles/{{profile}}/bin/deploy.py"
+  mode: 0777
+  tags: [deploy_app]
+
+

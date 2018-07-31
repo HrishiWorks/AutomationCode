@@ -1,0 +1,8 @@
+---
+ - name: PostgreSQL Server Installation and Configuration
+   hosts: postgres-server
+   become: true
+   gather_facts: no
+
+   roles:
+    - postgres

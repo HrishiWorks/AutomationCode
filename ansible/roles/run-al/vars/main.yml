@@ -1,0 +1,5 @@
+---
+# vars file for run_TDI_AL_playbook
+solution_dir: /var/TDI711/DEMO1
+AL: /var/TDI711/DEMO1/PutDataToPostgre.xml
+Run_AL: /opt/IBM/TDI/V7.1.1/bin

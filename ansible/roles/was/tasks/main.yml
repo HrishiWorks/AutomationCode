@@ -1,0 +1,10 @@
+---
+- name: extracting  all 3 zips into {{was_path}} 
+  unarchive: src={{was_path}}/{{item}} dest='{{was_path}}' mode=777 remote_src=yes
+  tags: [was_preq,preq,was]
+  with_items:
+    - "{{was_artifacts}}"
+
+- name: running WAS installation
+  shell: "/opt/IBM/InstallationManager/eclipse/tools/imcl install com.ibm.websphere.BASE.v85_8.5.5000.20130514_1044 -repositories {{was_path}}/repository.config -acceptLicense -showProgress -record install_was.xml"
+  tags: [was_install,was]

@@ -1,0 +1,11 @@
+---
+# vars file for roles/postgres
+path_postgres_rpm: /home/devops/pgdg-centos93-9.3-3.noarch.rpm
+postgresql_version: postgresql93-server*
+postgresql_service: postgresql-9.3
+postgresql_conf_path: /var/lib/pgsql/9.3/data
+#
+sql_script: createtable.sql
+dbname: emp_db
+dbtable: employee
+dbuser: devops

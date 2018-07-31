@@ -1,0 +1,2 @@
+temp {{ vault_db_user_pass }}
+temp.txt {{ vault_db_user_pass }}

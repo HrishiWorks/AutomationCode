@@ -1,0 +1,22 @@
+---
+# tasks file for tdi-base
+- name: create temp directory for installation
+  file: 
+    path: "{{ tdi_install_base_path }}/Linux/{{ tdi_tmp_dir }}/"
+    state: directory
+
+- name: unarchive tar file to /tmp/TDI711/Linux/TDI_IDENTITY_E_V7.1.1_LIN-X86-64/ directory
+  unarchive: 
+    src: "{{ tdi_install_base_path }}/Linux/{{ tdi_instal_tar_file }}"
+    dest: "{{ tdi_install_base_path }}/Linux/{{ tdi_tmp_dir }}/"
+    remote_src: yes
+
+- name: deploy the installer propeties file to /tmp/TDI711/Linux/TDI_IDENTITY_E_V7.1.1_LIN-X86-64/
+  template: 
+    src: TDI711_Install_Response_File.j2.txt
+    dest: "{{ tdi_install_base_path }}/Linux/{{ tdi_tmp_dir }}/linux_x86_64/TDI711_Install_Response_File.txt"
+    mode: 0755
+
+- name: execute the TDI silent installer
+  shell: "{{ tdi_install_base_path }}/Linux/{{ tdi_tmp_dir }}/linux_x86_64/install_tdiv711_linux_x86_64.bin -f ./TDI711_Install_Response_File.txt -i silent"
+  ignore_errors: yes

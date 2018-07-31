@@ -1,0 +1,15 @@
+---
+# tasks file for start_server
+- name: copy startServer.sh script on TDI server
+  template:
+    src: startupServer.sh
+    dest: "{{ tdi_server_script_path }}/{{tdi_server_start_cmd}}"
+    mode: 0777
+    force: true
+  tags:
+   - start-server
+
+- name: "starting server instance {{ tdi_inst_name }}"
+  command: "{{ tdi_server_script_path }}/{{ tdi_server_start_cmd }}"
+  tags:
+   - start-server

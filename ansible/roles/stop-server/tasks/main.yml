@@ -1,0 +1,6 @@
+---
+# tasks file for stop_server
+- name: stoping the server
+  command: "pkill -f {{ tdi_inst_name }}"
+  tags:
+    - stop-server

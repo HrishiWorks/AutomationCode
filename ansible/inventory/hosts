@@ -1,0 +1,15 @@
+[was-server]
+192.168.56.106
+
+[postgres-server]
+192.168.56.102
+
+[tdi-server]
+192.168.56.104
+
+[all:children]
+tdi-server
+was-server
+
+[control]
+ansiblecn ansible_connection=local

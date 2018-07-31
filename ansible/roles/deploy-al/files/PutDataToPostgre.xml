@@ -1,0 +1,914 @@
+<?xml version="1.0" encoding="UTF-8"?><MetamergeConfig IDIversion="Created by TDI7.1.1.5 - 2015-09-30" created="Tue Mar 06 16:30:43 IST 2018" createdBy="GS-1553" modified="Tue Mar 06 16:30:43 IST 2018" modifiedBy="GS-1553" version="7.1.1">
+    <Folder name="AssemblyLines">
+        <AssemblyLine name="PutDataToPostgre">
+            <ModTime>1520333912269</ModTime>
+            <Settings/>
+            <Hooks>
+                <Hook name="prolog0">
+                    <InheritFrom>[no inheritance]</InheritFrom>
+                    <Name>prolog0</Name>
+                    <Script><![CDATA[// Define global variables here
+
+var gOP = null;
+var ErrorFound = "False";]]></Script>
+                    <Enabled>true</Enabled>
+                </Hook>
+            </Hooks>
+            <CheckpointConfig/>
+            <SandboxConfig/>
+            <SimulationConfig>
+                <SimulationStates>
+                    <Component name="ReadDataFromCSVFile" state="Enabled"/>
+                    <Component name="lookUpEntryInDatabase" state="Enabled"/>
+                    <Component name="logOp" state="Enabled"/>
+                    <Component name="addEntryToDatabseIfNotPresent_1" state="Simulated"/>
+                    <Component name="updateEntryIfAlreadyPresentInDB_1" state="Simulated"/>
+                    <Component name="TimerConnector" state="Enabled"/>
+                </SimulationStates>
+                <ProxySettings/>
+            </SimulationConfig>
+            <LogConfig>
+                <Logger name="DailyRollingFileAppender">
+                    <InheritFrom>system:/Loggers/ibmdi.DailyRollingFileAppender</InheritFrom>
+                    <parameter name="DailyRollingFile.Append">false</parameter>
+                    <parameter name="DailyRollingFile.DatePattern">'.'yyyy-MM-dd</parameter>
+                    <parameter name="DailyRollingFile.File">@SUBSTITUTE{property.PutDataToPostgre:LogsFile}</parameter>
+                    <parameter name="Pattern.ConversionPattern">%d{ISO8601} %-5p [%c] - %m%n</parameter>
+                    <parameter name="com.ibm.di.log.layout">Pattern</parameter>
+                    <parameter name="com.ibm.di.log.level">INFO</parameter>
+                    <parameter name="enabled">true</parameter>
+                </Logger>
+            </LogConfig>
+            <ContainerEF name="EntryFeedContainer">
+                <Connector name="TimerConnector">
+                    <InheritFrom>system:/Connectors/ibmdi.Timer</InheritFrom>
+                    <ModTime>1519710385511</ModTime>
+                    <ConnectorMode>Iterator</ConnectorMode>
+                    <ConnectorState>Disabled</ConnectorState>
+                    <Configuration>
+                        <InheritFrom>[parent]</InheritFrom>
+                        <parameter name="hours">*</parameter>
+                        <parameter name="minutes">0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16</parameter>
+                    </Configuration>
+                    <Parser>
+                        <InheritFrom>[parent]</InheritFrom>
+                        <Schema name="Input">
+                            <InheritFrom>[parent]</InheritFrom>
+                        </Schema>
+                        <Schema name="Output">
+                            <InheritFrom>[parent]</InheritFrom>
+                        </Schema>
+                    </Parser>
+                    <AttributeMap name="Input">
+                        <InheritFrom>[parent]</InheritFrom>
+                    </AttributeMap>
+                    <AttributeMap name="Output">
+                        <InheritFrom>[parent]</InheritFrom>
+                    </AttributeMap>
+                    <DeltaSettings>
+                        <WhenToCommit>After every database operation</WhenToCommit>
+                        <RowLocking>SERIALIZABLE</RowLocking>
+                        <ChangeDetectionMode>DETECT_ALL</ChangeDetectionMode>
+                    </DeltaSettings>
+                    <Schema name="Input">
+                        <InheritFrom>[parent]</InheritFrom>
+                    </Schema>
+                    <Schema name="Output">
+                        <InheritFrom>[parent]</InheritFrom>
+                    </Schema>
+                    <LinkCriteria>
+                        <InheritFrom>[parent]</InheritFrom>
+                    </LinkCriteria>
+                    <Hooks>
+                        <InheritFrom>[parent]</InheritFrom>
+                    </Hooks>
+                    <CheckpointConfig/>
+                    <SandboxConfig/>
+                    <Reconnect>
+                        <InheritFrom>[parent]</InheritFrom>
+                        <ReconnectRules/>
+                    </Reconnect>
+                    <Operations/>
+                    <PoolDefinition>
+                        <InheritFrom>[parent]</InheritFrom>
+                    </PoolDefinition>
+                    <PoolInstance/>
+                </Connector>
+            </ContainerEF>
+            <ContainerDF name="DataFlowContainer">
+                <Loop name="ReadDataFromCSVFile">
+                    <ModTime>1520333912269</ModTime>
+                    <LoopType>1</LoopType>
+                    <Connector name="ReadDataFromCSVFile">
+                        <InheritFrom>system:/Connectors/ibmdi.FileSystem</InheritFrom>
+                        <ModTime>1520331677075</ModTime>
+                        <ConnectorMode>Iterator</ConnectorMode>
+                        <ConnectorState>Enabled</ConnectorState>
+                        <Configuration>
+                            <InheritFrom>[parent]</InheritFrom>
+                            <parameter name="debug">true</parameter>
+                            <parameter name="filePath">@SUBSTITUTE{property.PutDataToPostgre:CsvFile}</parameter>
+                        </Configuration>
+                        <Parser>
+                            <InheritFrom>system:/Parsers/ibmdi.CSV</InheritFrom>
+                            <Schema name="Input">
+                                <InheritFrom>[parent]</InheritFrom>
+                            </Schema>
+                            <Schema name="Output">
+                                <InheritFrom>[parent]</InheritFrom>
+                            </Schema>
+                        </Parser>
+                        <AttributeMap name="Input">
+                            <InheritFrom>[parent]</InheritFrom>
+                            <AttributeMapItem>
+                                <Name>department</Name>
+                                <Type>simple</Type>
+                                <Simple>department</Simple>
+                            </AttributeMapItem>
+                            <AttributeMapItem>
+                                <Name>email</Name>
+                                <Type>simple</Type>
+                                <Simple>email</Simple>
+                            </AttributeMapItem>
+                            <AttributeMapItem>
+                                <Name>firstname</Name>
+                                <Type>simple</Type>
+                                <Simple>firstname</Simple>
+                            </AttributeMapItem>
+                            <AttributeMapItem>
+                                <Name>id</Name>
+                                <Type>simple</Type>
+                                <Simple>id</Simple>
+                            </AttributeMapItem>
+                            <AttributeMapItem>
+                                <Name>lastname</Name>
+                                <Type>simple</Type>
+                                <Simple>lastname</Simple>
+                            </AttributeMapItem>
+                        </AttributeMap>
+                        <AttributeMap name="Output"/>
+                        <DeltaSettings>
+                            <UniqueAttribute/>
+                            <WhenToCommit>After every database operation</WhenToCommit>
+                            <RowLocking>SERIALIZABLE</RowLocking>
+                            <ChangeDetectionMode>DETECT_ALL</ChangeDetectionMode>
+                        </DeltaSettings>
+                        <Schema name="Input">
+                            <InheritFrom>[parent]</InheritFrom>
+                            <SchemaItem>
+                                <Name>address</Name>
+                                <Syntax>java.lang.String</Syntax>
+                            </SchemaItem>
+                            <SchemaItem>
+                                <Name>department</Name>
+                                <Syntax>java.lang.String</Syntax>
+                            </SchemaItem>
+                            <SchemaItem>
+                                <Name>email</Name>
+                                <Syntax>java.lang.String</Syntax>
+                            </SchemaItem>
+                            <SchemaItem>
+                                <Name>firstname</Name>
+                                <Syntax>java.lang.String</Syntax>
+                            </SchemaItem>
+                            <SchemaItem>
+                                <Name>id</Name>
+                                <Syntax>java.lang.String</Syntax>
+                            </SchemaItem>
+                            <SchemaItem>
+                                <Name>lastname</Name>
+                                <Syntax>java.lang.String</Syntax>
+                            </SchemaItem>
+                            <SchemaItem>
+                                <Name>name</Name>
+                                <Syntax>java.lang.String</Syntax>
+                            </SchemaItem>
+                            <SchemaItem>
+                                <Name>phone</Name>
+                                <Syntax>java.lang.String</Syntax>
+                            </SchemaItem>
+                        </Schema>
+                        <Schema name="Output">
+                            <UserComment>{extsyntax=TEXTAREA, name=userComment}</UserComment>
+                            <InheritFrom>[no inheritance]</InheritFrom>
+                            <SchemaItem>
+                                <Name>debug</Name>
+                                <NativeSyntax>boolean</NativeSyntax>
+                            </SchemaItem>
+                            <SchemaItem>
+                                <Name>exclusiveLock</Name>
+                                <NativeSyntax>boolean</NativeSyntax>
+                            </SchemaItem>
+                            <SchemaItem>
+                                <Name>fileAppend</Name>
+                                <NativeSyntax>boolean</NativeSyntax>
+                            </SchemaItem>
+                            <SchemaItem>
+                                <Name>fileAwaitDataTimeout</Name>
+                                <NativeSyntax>DROPEDIT</NativeSyntax>
+                            </SchemaItem>
+                            <SchemaItem>
+                                <Name>filePath</Name>
+                            </SchemaItem>
+                            <SchemaItem>
+                                <Name>userComment</Name>
+                                <NativeSyntax>TEXTAREA</NativeSyntax>
+                            </SchemaItem>
+                        </Schema>
+                        <LinkCriteria/>
+                        <Hooks>
+                            <InheritFrom>[parent]</InheritFrom>
+                            <Hook name="connect_init">
+                                <InheritFrom>[no inheritance]</InheritFrom>
+                                <Name>connect_init</Name>
+                                <Script>ErrorFound = "True";</Script>
+                                <Enabled>true</Enabled>
+                            </Hook>
+                            <Hook name="default_fail">
+                                <InheritFrom>[no inheritance]</InheritFrom>
+                                <Name>default_fail</Name>
+                                <Script><![CDATA[//Change the ErrorFOund var
+ErrorFound = "True";]]></Script>
+                                <Enabled>true</Enabled>
+                            </Hook>
+                            <Hook name="default_ok">
+                                <InheritFrom>[no inheritance]</InheritFrom>
+                                <Name>default_ok</Name>
+                                <Script>task.logmsg("the value recieved."+work.id);</Script>
+                                <Enabled>true</Enabled>
+                            </Hook>
+                            <Hook name="get_ok">
+                                <InheritFrom>[no inheritance]</InheritFrom>
+                                <Name>get_ok</Name>
+                                <Script>task.logmsg("In Get Next Successful.the value recieved."+work.id);</Script>
+                                <Enabled>true</Enabled>
+                            </Hook>
+                            <Hook name="on_connection_failure">
+                                <InheritFrom>[no inheritance]</InheritFrom>
+                                <Name>on_connection_failure</Name>
+                                <Script>ErrorFound = "True";</Script>
+                                <Enabled>true</Enabled>
+                            </Hook>
+                        </Hooks>
+                        <CheckpointConfig/>
+                        <SandboxConfig/>
+                        <Reconnect>
+                            <InheritFrom>[parent]</InheritFrom>
+                            <ReconnectRules/>
+                        </Reconnect>
+                        <Operations/>
+                        <PoolDefinition>
+                            <InheritFrom>[parent]</InheritFrom>
+                        </PoolDefinition>
+                        <PoolInstance/>
+                    </Connector>
+                    <Branch name="ReadDataFromCSVFile">
+                        <ModTime>1520333912269</ModTime>
+                        <Connector name="lookUpEntryInDatabase">
+                            <InheritFrom>system:/Connectors/ibmdi.JDBC</InheritFrom>
+                            <ModTime>1520332957278</ModTime>
+                            <ConnectorMode>Lookup</ConnectorMode>
+                            <ConnectorState>Enabled</ConnectorState>
+                            <Configuration>
+                                <InheritFrom>[parent]</InheritFrom>
+                                <parameter name="debug">true</parameter>
+                                <parameter name="jdbcDriver">org.postgresql.Driver</parameter>
+                                <parameter name="jdbcLogin">@SUBSTITUTE{property.PutDataToPostgre:UserName}</parameter>
+                                <parameter name="jdbcPassword">@SUBSTITUTE{property.PutDataToPostgre:Password}</parameter>
+                                <parameter name="jdbcSource">@SUBSTITUTE{property.PutDataToPostgre:JdbcUrl}</parameter>
+                                <parameter name="jdbcTable">@SUBSTITUTE{property.PutDataToPostgre:Table}</parameter>
+                            </Configuration>
+                            <Parser>
+                                <InheritFrom>[parent]</InheritFrom>
+                                <Schema name="Input">
+                                    <InheritFrom>[parent]</InheritFrom>
+                                </Schema>
+                                <Schema name="Output">
+                                    <InheritFrom>[parent]</InheritFrom>
+                                </Schema>
+                            </Parser>
+                            <AttributeMap name="Input">
+                                <InheritFrom>[parent]</InheritFrom>
+                                <AttributeMapItem>
+                                    <Name>department</Name>
+                                    <Type>simple</Type>
+                                    <Simple>department</Simple>
+                                </AttributeMapItem>
+                                <AttributeMapItem>
+                                    <Name>email</Name>
+                                    <Type>simple</Type>
+                                    <Simple>email</Simple>
+                                </AttributeMapItem>
+                                <AttributeMapItem>
+                                    <Name>firstname</Name>
+                                    <Type>simple</Type>
+                                    <Simple>firstname</Simple>
+                                </AttributeMapItem>
+                                <AttributeMapItem>
+                                    <Name>id</Name>
+                                    <Type>simple</Type>
+                                    <Simple>id</Simple>
+                                </AttributeMapItem>
+                                <AttributeMapItem>
+                                    <Name>lastname</Name>
+                                    <Type>simple</Type>
+                                    <Simple>lastname</Simple>
+                                </AttributeMapItem>
+                            </AttributeMap>
+                            <AttributeMap name="Output">
+                                <InheritFrom>[parent]</InheritFrom>
+                                <AttributeMapItem>
+                                    <Name>dept</Name>
+                                    <Type>simple</Type>
+                                    <Simple>dept</Simple>
+                                </AttributeMapItem>
+                                <AttributeMapItem>
+                                    <Name>id</Name>
+                                    <Type>simple</Type>
+                                    <Simple>id</Simple>
+                                </AttributeMapItem>
+                                <AttributeMapItem>
+                                    <Name>name</Name>
+                                    <Type>simple</Type>
+                                    <Simple>name</Simple>
+                                </AttributeMapItem>
+                            </AttributeMap>
+                            <DeltaSettings/>
+                            <Schema name="Input">
+                                <InheritFrom>[parent]</InheritFrom>
+                                <SchemaItem>
+                                    <Name>department</Name>
+                                    <Syntax>java.lang.String</Syntax>
+                                    <NativeSyntax>varchar</NativeSyntax>
+                                </SchemaItem>
+                                <SchemaItem>
+                                    <Name>email</Name>
+                                    <Syntax>java.lang.String</Syntax>
+                                    <NativeSyntax>varchar</NativeSyntax>
+                                </SchemaItem>
+                                <SchemaItem>
+                                    <Name>firstname</Name>
+                                    <Syntax>java.lang.String</Syntax>
+                                    <NativeSyntax>varchar</NativeSyntax>
+                                </SchemaItem>
+                                <SchemaItem>
+                                    <Name>id</Name>
+                                    <Syntax>java.lang.Integer</Syntax>
+                                    <NativeSyntax>int4</NativeSyntax>
+                                </SchemaItem>
+                                <SchemaItem>
+                                    <Name>lastname</Name>
+                                    <Syntax>java.lang.String</Syntax>
+                                    <NativeSyntax>varchar</NativeSyntax>
+                                </SchemaItem>
+                            </Schema>
+                            <Schema name="Output">
+                                <InheritFrom>[parent]</InheritFrom>
+                                <SchemaItem>
+                                    <Name>address</Name>
+                                    <NativeSyntax>varchar</NativeSyntax>
+                                </SchemaItem>
+                                <SchemaItem>
+                                    <Name>department</Name>
+                                    <Syntax>java.lang.String</Syntax>
+                                </SchemaItem>
+                                <SchemaItem>
+                                    <Name>dept</Name>
+                                    <Syntax>java.lang.String</Syntax>
+                                    <NativeSyntax>varchar</NativeSyntax>
+                                </SchemaItem>
+                                <SchemaItem>
+                                    <Name>email</Name>
+                                    <Syntax>java.lang.String</Syntax>
+                                </SchemaItem>
+                                <SchemaItem>
+                                    <Name>firstname</Name>
+                                    <Syntax>java.lang.String</Syntax>
+                                </SchemaItem>
+                                <SchemaItem>
+                                    <Name>id</Name>
+                                    <Syntax>java.lang.Integer</Syntax>
+                                    <NativeSyntax>serial</NativeSyntax>
+                                </SchemaItem>
+                                <SchemaItem>
+                                    <Name>lastname</Name>
+                                    <Syntax>java.lang.String</Syntax>
+                                </SchemaItem>
+                                <SchemaItem>
+                                    <Name>name</Name>
+                                    <Syntax>java.lang.String</Syntax>
+                                    <NativeSyntax>varchar</NativeSyntax>
+                                </SchemaItem>
+                                <SchemaItem>
+                                    <Name>phoneno</Name>
+                                    <NativeSyntax>varchar</NativeSyntax>
+                                </SchemaItem>
+                            </Schema>
+                            <LinkCriteria>
+                                <InheritFrom>[parent]</InheritFrom>
+                                <MatchAny>true</MatchAny>
+                                <LinkCriteriaItem>
+                                    <Key>161e03a3870</Key>
+                                    <Attribute>id</Attribute>
+                                    <Operator>equals</Operator>
+                                    <Value>$id</Value>
+                                </LinkCriteriaItem>
+                            </LinkCriteria>
+                            <Hooks>
+                                <InheritFrom>[parent]</InheritFrom>
+                                <Hook name="after_lookup">
+                                    <InheritFrom>[no inheritance]</InheritFrom>
+                                    <Name>after_lookup</Name>
+                                    <Script><![CDATA[gOP = "MODIFY";
+task.logmsg("Setting operation type to modify");]]></Script>
+                                    <Enabled>true</Enabled>
+                                </Hook>
+                                <Hook name="connect_init">
+                                    <InheritFrom>[no inheritance]</InheritFrom>
+                                    <Name>connect_init</Name>
+                                    <Script><![CDATA[task.logmsg("could not connect to the server.");
+ErrorFound = "True";]]></Script>
+                                    <Enabled>true</Enabled>
+                                </Hook>
+                                <Hook name="lookup_multiple">
+                                    <Name>lookup_multiple</Name>
+                                    <Enabled>true</Enabled>
+                                </Hook>
+                                <Hook name="lookup_nomatch">
+                                    <InheritFrom>[no inheritance]</InheritFrom>
+                                    <Name>lookup_nomatch</Name>
+                                    <Script><![CDATA[gOP = "ADD";
+task.logmsg("Setting operation type to ADD");]]></Script>
+                                    <Enabled>true</Enabled>
+                                </Hook>
+                            </Hooks>
+                            <CheckpointConfig/>
+                            <SandboxConfig/>
+                            <Reconnect>
+                                <InheritFrom>[parent]</InheritFrom>
+                                <ReconnectRules/>
+                            </Reconnect>
+                            <Operations/>
+                            <PoolDefinition>
+                                <InheritFrom>[parent]</InheritFrom>
+                            </PoolDefinition>
+                            <PoolInstance/>
+                        </Connector>
+                        <Script name="logOp">
+                            <ModTime>1519653241039</ModTime>
+                            <parameter name="script">task.logmsg("OP TYPE : " + gOP);</parameter>
+                        </Script>
+                        <Connector name="addEntryToDatabseIfNotPresent_1">
+                            <InheritFrom>system:/Connectors/ibmdi.JDBC</InheritFrom>
+                            <ModTime>1520333912269</ModTime>
+                            <ConnectorMode>AddOnly</ConnectorMode>
+                            <ConnectorState>Enabled</ConnectorState>
+                            <Configuration>
+                                <InheritFrom>[parent]</InheritFrom>
+                                <parameter name="debug">true</parameter>
+                                <parameter name="jdbcDriver">org.postgresql.Driver</parameter>
+                                <parameter name="jdbcLogin">@SUBSTITUTE{property.PutDataToPostgre:UserName}</parameter>
+                                <parameter name="jdbcPassword">@SUBSTITUTE{property.PutDataToPostgre:Password}</parameter>
+                                <parameter name="jdbcSource">@SUBSTITUTE{property.PutDataToPostgre:JdbcUrl}</parameter>
+                                <parameter name="jdbcTable">@SUBSTITUTE{property.PutDataToPostgre:Table}</parameter>
+                            </Configuration>
+                            <Parser>
+                                <InheritFrom>[parent]</InheritFrom>
+                                <Schema name="Input">
+                                    <InheritFrom>[parent]</InheritFrom>
+                                </Schema>
+                                <Schema name="Output">
+                                    <InheritFrom>[parent]</InheritFrom>
+                                </Schema>
+                            </Parser>
+                            <AttributeMap name="Input">
+                                <InheritFrom>[parent]</InheritFrom>
+                            </AttributeMap>
+                            <AttributeMap name="Output">
+                                <InheritFrom>[parent]</InheritFrom>
+                                <AttributeMapItem>
+                                    <Name>department</Name>
+                                    <Type>simple</Type>
+                                    <Simple>department</Simple>
+                                </AttributeMapItem>
+                                <AttributeMapItem>
+                                    <Name>email</Name>
+                                    <Type>simple</Type>
+                                    <Simple>email</Simple>
+                                </AttributeMapItem>
+                                <AttributeMapItem>
+                                    <Name>firstname</Name>
+                                    <Type>simple</Type>
+                                    <Simple>firstname</Simple>
+                                </AttributeMapItem>
+                                <AttributeMapItem>
+                                    <Name>id</Name>
+                                    <Type>simple</Type>
+                                    <Simple>id</Simple>
+                                </AttributeMapItem>
+                                <AttributeMapItem>
+                                    <Name>lastname</Name>
+                                    <Type>simple</Type>
+                                    <Simple>lastname</Simple>
+                                </AttributeMapItem>
+                            </AttributeMap>
+                            <DeltaSettings/>
+                            <Schema name="Input">
+                                <InheritFrom>[parent]</InheritFrom>
+                                <SchemaItem>
+                                    <Name>department</Name>
+                                    <Syntax>java.lang.String</Syntax>
+                                </SchemaItem>
+                                <SchemaItem>
+                                    <Name>email</Name>
+                                    <Syntax>java.lang.String</Syntax>
+                                </SchemaItem>
+                                <SchemaItem>
+                                    <Name>firstname</Name>
+                                    <Syntax>java.lang.String</Syntax>
+                                </SchemaItem>
+                                <SchemaItem>
+                                    <Name>id</Name>
+                                    <Syntax>java.lang.Integer</Syntax>
+                                </SchemaItem>
+                                <SchemaItem>
+                                    <Name>lastname</Name>
+                                    <Syntax>java.lang.String</Syntax>
+                                </SchemaItem>
+                            </Schema>
+                            <Schema name="Output">
+                                <InheritFrom>[parent]</InheritFrom>
+                                <SchemaItem>
+                                    <Name>department</Name>
+                                    <Syntax>java.lang.String</Syntax>
+                                    <NativeSyntax>varchar</NativeSyntax>
+                                </SchemaItem>
+                                <SchemaItem>
+                                    <Name>email</Name>
+                                    <Syntax>java.lang.String</Syntax>
+                                    <NativeSyntax>varchar</NativeSyntax>
+                                </SchemaItem>
+                                <SchemaItem>
+                                    <Name>firstname</Name>
+                                    <Syntax>java.lang.String</Syntax>
+                                    <NativeSyntax>varchar</NativeSyntax>
+                                </SchemaItem>
+                                <SchemaItem>
+                                    <Name>id</Name>
+                                    <Syntax>java.lang.Integer</Syntax>
+                                    <NativeSyntax>int4</NativeSyntax>
+                                </SchemaItem>
+                                <SchemaItem>
+                                    <Name>lastname</Name>
+                                    <Syntax>java.lang.String</Syntax>
+                                    <NativeSyntax>varchar</NativeSyntax>
+                                </SchemaItem>
+                            </Schema>
+                            <LinkCriteria>
+                                <InheritFrom>[parent]</InheritFrom>
+                            </LinkCriteria>
+                            <Hooks>
+                                <InheritFrom>[parent]</InheritFrom>
+                                <Hook name="addonly_ok">
+                                    <InheritFrom>[no inheritance]</InheritFrom>
+                                    <Name>addonly_ok</Name>
+                                    <Script>task.logmsg("Added entry to database");</Script>
+                                    <Enabled>true</Enabled>
+                                </Hook>
+                                <Hook name="before_execute">
+                                    <InheritFrom>[no inheritance]</InheritFrom>
+                                    <Name>before_execute</Name>
+                                    <Script><![CDATA[if(!(gOP.equals("ADD"))){
+	system.ignoreEntry("Skipping connector execution as mod entry received")
+}]]></Script>
+                                    <Enabled>true</Enabled>
+                                </Hook>
+                                <Hook name="default_fail">
+                                    <InheritFrom>[no inheritance]</InheritFrom>
+                                    <Name>default_fail</Name>
+                                    <Script/>
+                                    <Enabled>false</Enabled>
+                                </Hook>
+                                <Hook name="default_ok">
+                                    <InheritFrom>[no inheritance]</InheritFrom>
+                                    <Name>default_ok</Name>
+                                    <Script/>
+                                    <Enabled>false</Enabled>
+                                </Hook>
+                                <Hook name="initialize_fail">
+                                    <InheritFrom>[no inheritance]</InheritFrom>
+                                    <Name>initialize_fail</Name>
+                                    <Script/>
+                                    <Enabled>false</Enabled>
+                                </Hook>
+                            </Hooks>
+                            <CheckpointConfig/>
+                            <SandboxConfig/>
+                            <Reconnect>
+                                <InheritFrom>[parent]</InheritFrom>
+                                <ReconnectRules/>
+                            </Reconnect>
+                            <Operations/>
+                            <PoolDefinition>
+                                <InheritFrom>[parent]</InheritFrom>
+                            </PoolDefinition>
+                            <PoolInstance/>
+                        </Connector>
+                        <Connector name="updateEntryIfAlreadyPresentInDB_1">
+                            <InheritFrom>system:/Connectors/ibmdi.JDBC</InheritFrom>
+                            <ModTime>1520333881850</ModTime>
+                            <ConnectorMode>Update</ConnectorMode>
+                            <ConnectorState>Enabled</ConnectorState>
+                            <Configuration>
+                                <InheritFrom>[parent]</InheritFrom>
+                                <parameter name="jdbcDriver">org.postgresql.Driver</parameter>
+                                <parameter name="jdbcLogin">@SUBSTITUTE{property.PutDataToPostgre:UserName}</parameter>
+                                <parameter name="jdbcPassword">@SUBSTITUTE{property.PutDataToPostgre:Password}</parameter>
+                                <parameter name="jdbcSchema"/>
+                                <parameter name="jdbcSource">@SUBSTITUTE{property.PutDataToPostgre:JdbcUrl}</parameter>
+                                <parameter name="jdbcTable">@SUBSTITUTE{property.PutDataToPostgre:Table}</parameter>
+                            </Configuration>
+                            <Parser>
+                                <InheritFrom>[parent]</InheritFrom>
+                                <Schema name="Input">
+                                    <InheritFrom>[parent]</InheritFrom>
+                                </Schema>
+                                <Schema name="Output">
+                                    <InheritFrom>[parent]</InheritFrom>
+                                </Schema>
+                            </Parser>
+                            <AttributeMap name="Input">
+                                <InheritFrom>[parent]</InheritFrom>
+                            </AttributeMap>
+                            <AttributeMap name="Output">
+                                <InheritFrom>[parent]</InheritFrom>
+                                <AttributeMapItem>
+                                    <Name>department</Name>
+                                    <Type>simple</Type>
+                                    <Simple>department</Simple>
+                                </AttributeMapItem>
+                                <AttributeMapItem>
+                                    <Name>email</Name>
+                                    <Type>simple</Type>
+                                    <Simple>email</Simple>
+                                </AttributeMapItem>
+                                <AttributeMapItem>
+                                    <Name>firstname</Name>
+                                    <Type>simple</Type>
+                                    <Simple>firstname</Simple>
+                                </AttributeMapItem>
+                                <AttributeMapItem>
+                                    <Name>id</Name>
+                                    <Type>simple</Type>
+                                    <Modify>false</Modify>
+                                    <Simple>id</Simple>
+                                </AttributeMapItem>
+                                <AttributeMapItem>
+                                    <Name>lastname</Name>
+                                    <Type>simple</Type>
+                                    <Simple>lastname</Simple>
+                                </AttributeMapItem>
+                            </AttributeMap>
+                            <DeltaSettings/>
+                            <Schema name="Input">
+                                <InheritFrom>[parent]</InheritFrom>
+                                <SchemaItem>
+                                    <Name>department</Name>
+                                    <Syntax>java.lang.String</Syntax>
+                                </SchemaItem>
+                                <SchemaItem>
+                                    <Name>email</Name>
+                                    <Syntax>java.lang.String</Syntax>
+                                </SchemaItem>
+                                <SchemaItem>
+                                    <Name>firstname</Name>
+                                    <Syntax>java.lang.String</Syntax>
+                                </SchemaItem>
+                                <SchemaItem>
+                                    <Name>id</Name>
+                                    <Syntax>java.lang.Integer</Syntax>
+                                </SchemaItem>
+                                <SchemaItem>
+                                    <Name>lastname</Name>
+                                    <Syntax>java.lang.String</Syntax>
+                                </SchemaItem>
+                            </Schema>
+                            <Schema name="Output">
+                                <InheritFrom>[parent]</InheritFrom>
+                                <SchemaItem>
+                                    <Name>department</Name>
+                                    <Syntax>java.lang.String</Syntax>
+                                    <NativeSyntax>varchar</NativeSyntax>
+                                </SchemaItem>
+                                <SchemaItem>
+                                    <Name>email</Name>
+                                    <Syntax>java.lang.String</Syntax>
+                                    <NativeSyntax>varchar</NativeSyntax>
+                                </SchemaItem>
+                                <SchemaItem>
+                                    <Name>firstname</Name>
+                                    <Syntax>java.lang.String</Syntax>
+                                    <NativeSyntax>varchar</NativeSyntax>
+                                </SchemaItem>
+                                <SchemaItem>
+                                    <Name>id</Name>
+                                    <Syntax>java.lang.Integer</Syntax>
+                                    <NativeSyntax>int4</NativeSyntax>
+                                </SchemaItem>
+                                <SchemaItem>
+                                    <Name>lastname</Name>
+                                    <Syntax>java.lang.String</Syntax>
+                                    <NativeSyntax>varchar</NativeSyntax>
+                                </SchemaItem>
+                            </Schema>
+                            <LinkCriteria>
+                                <InheritFrom>[parent]</InheritFrom>
+                                <LinkCriteriaItem>
+                                    <Key>161d2656568</Key>
+                                    <Attribute>id</Attribute>
+                                    <Operator>equals</Operator>
+                                    <Value>$id</Value>
+                                </LinkCriteriaItem>
+                            </LinkCriteria>
+                            <Hooks>
+                                <InheritFrom>[parent]</InheritFrom>
+                                <Hook name="after_update">
+                                    <InheritFrom>[no inheritance]</InheritFrom>
+                                    <Name>after_update</Name>
+                                    <Script>task.logmsg("Updated data successfully.");</Script>
+                                    <Enabled>true</Enabled>
+                                </Hook>
+                                <Hook name="before_execute">
+                                    <InheritFrom>[no inheritance]</InheritFrom>
+                                    <Name>before_execute</Name>
+                                    <Script><![CDATA[if(! gOP.equals("MODIFY")){
+	system.ignoreEntry("Skipping connector execution as ADD entry received")
+}]]></Script>
+                                    <Enabled>true</Enabled>
+                                </Hook>
+                                <Hook name="default_fail">
+                                    <InheritFrom>[no inheritance]</InheritFrom>
+                                    <Name>default_fail</Name>
+                                    <Script/>
+                                    <Enabled>false</Enabled>
+                                </Hook>
+                                <Hook name="update_ok">
+                                    <InheritFrom>[no inheritance]</InheritFrom>
+                                    <Name>update_ok</Name>
+                                    <Script>task.logmsg("Updated data successfully.");</Script>
+                                    <Enabled>false</Enabled>
+                                </Hook>
+                            </Hooks>
+                            <CheckpointConfig/>
+                            <SandboxConfig/>
+                            <Reconnect>
+                                <InheritFrom>[parent]</InheritFrom>
+                                <ReconnectRules/>
+                            </Reconnect>
+                            <Operations/>
+                            <PoolDefinition>
+                                <InheritFrom>[parent]</InheritFrom>
+                            </PoolDefinition>
+                            <PoolInstance/>
+                        </Connector>
+                        <Conditions/>
+                        <MatchAny>false</MatchAny>
+                        <Enabled>true</Enabled>
+                        <Type>0</Type>
+                    </Branch>
+                </Loop>
+            </ContainerDF>
+            <ThreadOptions/>
+            <Operations/>
+            <InitParams>
+                <Schema name="AssemblyLineInitParams"/>
+            </InitParams>
+        </AssemblyLine>
+    </Folder>
+    <Folder name="Connectors"/>
+    <Folder name="Parsers"/>
+    <Folder name="Scripts"/>
+    <JavaLibraries/>
+    <JavaProperties/>
+    <Folder name="Includes"/>
+    <Folder name="Config">
+        <LogConfig name="Logging"/>
+        <InstanceProperties name="AutoStart">
+            <AutoStart/>
+        </InstanceProperties>
+        <TombstonesConfig name="Tombstones"/>
+        <SolutionInterface name="SolutionInterface">
+            <ModTime>1519812730237</ModTime>
+            <PollInterval>-1</PollInterval>
+            <InstanceID>PutDataToPostgre</InstanceID>
+            <enabled>true</enabled>
+        </SolutionInterface>
+    </Folder>
+    <Folder name="Functions"/>
+    <Folder name="AttributeMaps"/>
+    <Properties name="Properties">
+        <Stores>
+            <PropertyStore name="Solution-Properties">
+                <Parser>
+                    <Schema name="Input">
+                        <InheritFrom>[parent]</InheritFrom>
+                    </Schema>
+                    <Schema name="Output">
+                        <InheritFrom>[parent]</InheritFrom>
+                    </Schema>
+                </Parser>
+                <RawConnector>
+                    <InheritFrom>system:/Connectors/ibmdi.Properties</InheritFrom>
+                    <parameter name="collectionType">Solution-Properties</parameter>
+                </RawConnector>
+                <Key>key</Key>
+                <Value>value</Value>
+                <ReadOnly>false</ReadOnly>
+                <InitialLoad>true</InitialLoad>
+                <CacheTimeout>0</CacheTimeout>
+            </PropertyStore>
+            <PropertyStore name="Global-Properties">
+                <Parser>
+                    <Schema name="Input">
+                        <InheritFrom>[parent]</InheritFrom>
+                    </Schema>
+                    <Schema name="Output">
+                        <InheritFrom>[parent]</InheritFrom>
+                    </Schema>
+                </Parser>
+                <RawConnector>
+                    <InheritFrom>system:/Connectors/ibmdi.Properties</InheritFrom>
+                    <parameter name="collectionType">Global-Properties</parameter>
+                </RawConnector>
+                <Key>key</Key>
+                <Value>value</Value>
+                <ReadOnly>false</ReadOnly>
+                <InitialLoad>true</InitialLoad>
+                <CacheTimeout>0</CacheTimeout>
+            </PropertyStore>
+            <PropertyStore name="System-Properties">
+                <Parser>
+                    <Schema name="Input">
+                        <InheritFrom>[parent]</InheritFrom>
+                    </Schema>
+                    <Schema name="Output">
+                        <InheritFrom>[parent]</InheritFrom>
+                    </Schema>
+                </Parser>
+                <RawConnector>
+                    <InheritFrom>system:/Connectors/ibmdi.Properties</InheritFrom>
+                    <parameter name="collectionType">System-Properties</parameter>
+                </RawConnector>
+                <Key>key</Key>
+                <Value>value</Value>
+                <ReadOnly>false</ReadOnly>
+                <InitialLoad>true</InitialLoad>
+                <CacheTimeout>0</CacheTimeout>
+            </PropertyStore>
+            <PropertyStore name="Java-Properties">
+                <Parser>
+                    <Schema name="Input">
+                        <InheritFrom>[parent]</InheritFrom>
+                    </Schema>
+                    <Schema name="Output">
+                        <InheritFrom>[parent]</InheritFrom>
+                    </Schema>
+                </Parser>
+                <RawConnector>
+                    <InheritFrom>system:/Connectors/ibmdi.Properties</InheritFrom>
+                    <parameter name="collection">@SUBSTITUTE{config.$directory}/PutDataToPostgre.properties</parameter>
+                    <parameter name="collectionType">Java-Properties</parameter>
+                </RawConnector>
+                <Key>key</Key>
+                <Value>value</Value>
+                <ReadOnly>false</ReadOnly>
+                <InitialLoad>true</InitialLoad>
+                <CacheTimeout>0</CacheTimeout>
+            </PropertyStore>
+            <PropertyStore name="PutDataToPostgre">
+                <ModTime>1520320942846</ModTime>
+                <Parser>
+                    <Schema name="Input">
+                        <InheritFrom>[parent]</InheritFrom>
+                    </Schema>
+                    <Schema name="Output">
+                        <InheritFrom>[parent]</InheritFrom>
+                    </Schema>
+                </Parser>
+                <RawConnector>
+                    <InheritFrom>system:/Connectors/ibmdi.Properties</InheritFrom>
+                    <parameter name="collection">./properties/PutDataToPostgre.properties</parameter>
+                    <parameter name="collectionType">PutDataToPostgre</parameter>
+                    <parameter name="keyAlias"/>
+                </RawConnector>
+                <Key>key</Key>
+                <Value>value</Value>
+                <ReadOnly>false</ReadOnly>
+                <InitialLoad>true</InitialLoad>
+                <CacheTimeout>0</CacheTimeout>
+            </PropertyStore>
+        </Stores>
+    </Properties>
+    <Folder name="Schedules"/>
+    <Folder name="Sequences"/>
+</MetamergeConfig>

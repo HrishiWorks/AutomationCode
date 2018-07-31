@@ -1,0 +1,13 @@
+---
+- hosts: tdi-server
+  become: true
+  gather_facts: false
+  
+  tasks:
+  - include_vars: "{{ payload }}"
+  - debug: 
+      var: "{{ payload }}"
+  
+  roles:
+    - deploy-al
+    - run-al

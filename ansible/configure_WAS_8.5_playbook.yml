@@ -1,0 +1,7 @@
+---
+- hosts: was-server
+  become: true
+  gather_facts: false
+
+  roles:
+    - profile

@@ -1,0 +1,41 @@
+---
+# TDI Server installation and Fix-Pack properties
+tdi_install_dir: /opt/IBM/TDI/V7.1.1
+tdi_install_base_path: /tmp/TDI711
+tdi_tmp_dir: TDI_IDENTITY_E_V7.1.1_LIN-X86-64
+tdi_instal_tar_file: TDI_IDENTITY_E_V7.1.1_LIN-X86-64.tar
+tdi_bin_dir: /opt/IBM/TDI/V7.1.1/bin
+tdi_fp_dir: /tmp/TDI711/7.1.1-TIV-TDI-FP0006
+
+# TDI Solution Directory properties
+tdi_inst_name: DEMO1
+tdi_sol_dir: "/var/TDI711/{{ tdi_inst_name }}/server1/solutionDirectory"
+tdi_inst_port: 1101
+
+# TDI server management properties
+tdi_server_script_path: /opt/IBM/TDI/V7.1.1
+tdi_server_stop_cmd:
+tdi_server_start_cmd: startupServer.sh
+
+
+# TDI AL/Configuration management properties.
+#tdi_config_file_name: 
+
+#tdi_csv_file_path:
+#tdi_csv_file_name:
+
+#tdi_prop_file_path:
+#tdi_prop_file_name:
+
+jar_file: postgresql-9.4-1202.jdbc4.jar
+jar_dest: "{{ tdi_install_dir }}/jars/3rdparty/others"
+AL_src: PutDataToPostgre.xml
+AL_dest: "{{ tdi_sol_dir }}/configs"
+Dir_for_property_file: "{{ tdi_sol_dir }}/properties/"
+Property_src: PutDataToPostgre.properties
+Dir_for_input_file: "{{ tdi_sol_dir }}/File"
+Input_File: InputFile1.csv
+al_name: PutDataToPostgre
+#tdi_al_start_cmd: "{{ tdi_bin_dir }}/tdisrvctl -p {{ tdi_inst_port }} -op start -s {{ tdi_sol_dir }} -c {{tdi_sol_dir}}/configs/{{ AL_src }} -r {{ al_name }}" 
+tdi_al_start_cmd: "{{ tdi_bin_dir }}/tdisrvctl -p {{ tdi_inst_port }} -s {{ tdi_sol_dir }} -op start -c {{tdi_sol_dir}}/configs/{{ AL_src }} -r {{ al_name }}" 
+tdi_al_stop_cmd: "{{ tdi_bin_dir }}/tdisrvctl -p {{ tdi_inst_port }} -s {{ tdi_sol_dir }} -op stop -c {{tdi_sol_dir}}/configs/{{ AL_src }}" 

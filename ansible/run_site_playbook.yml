@@ -1,0 +1,10 @@
+---
+- hosts: tdi-server
+  become: true
+  become_user: root
+  gather_facts: false
+ 
+- include: ./manage_TDI_711_server_playbook.yml
+- include: ./manage_TDI_Config_AL_playbook.yml
+
+# tag to run this playbook start-server

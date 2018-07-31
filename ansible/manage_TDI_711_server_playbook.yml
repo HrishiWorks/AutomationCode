@@ -1,0 +1,8 @@
+---
+- hosts: tdi-server
+  become: true
+  gather_facts: false
+
+  roles: 
+    - start-server
+    - stop-server

@@ -1,0 +1,7 @@
+# Playbook to update TDI fix-pack 0006
+---
+- hosts: tdi-server
+  become: true
+  gather_facts: false
+  roles:
+    - tdi-fixpack

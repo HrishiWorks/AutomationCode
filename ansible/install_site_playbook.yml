@@ -1,0 +1,19 @@
+---
+- hosts: postgres-server:was-server:tdi-server
+  become: true
+  gather_facts: false
+
+# Stop the IPTables.
+  tasks:
+    - name: stop iptables
+      service:
+         name: iptables
+         state: stopped
+         enabled: no
+
+- include: ./install_postgres9.3.yml
+- include: ./install_WAS_8.5_playbook.yml
+- include: ./configure_WAS_8.5_playbook.yml
+- include: ./install_TDI_711_playbook.yml
+- include: ./update_TDI_711_Fixpack_playbook.yml
+- include: ./deploy_WebApp_playbook.yml

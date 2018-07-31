@@ -1,0 +1,12 @@
+---
+- name: installing unzip
+  yum: name=unzip state=present  
+  tags: [im_preq,im]
+
+- name: extracting im agent zip into {{im_path}} 
+  unarchive: src='{{im_path}}/{{im_artifact}}' dest={{im_path}} mode=777 remote_src=yes
+  tags: [preq,im_preq,im]
+
+- name: running IM installation
+  shell: "{{im_path}}/tools/imcl install com.ibm.cic.agent -repositories {{im_path}}/repository.config -acceptLicense -showProgress"
+  tags: [im_install,im]

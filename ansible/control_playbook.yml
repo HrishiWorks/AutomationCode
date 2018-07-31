@@ -1,0 +1,13 @@
+# Playbook to manage the control node.
+---
+- hosts: control
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: install curl
+      apt: 
+        name: curl
+        state: present
+        update_cache: yes
+

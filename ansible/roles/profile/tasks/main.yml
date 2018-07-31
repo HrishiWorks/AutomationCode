@@ -1,0 +1,21 @@
+---
+- name: checking profile exists or not
+  shell: "{{execution_path}}/manageprofiles.sh -listProfiles"
+  register: profiles 
+  tags: [create_profile,list_profiles]
+
+- name: debug profile exists or not
+  debug: msg="{{profiles}}"
+  tags: [create_profile,list_profiles]
+  when: profile in profiles.stdout
+
+- name: creating default profile if not added custom profile
+  tags: [create_profile]
+  shell: "{{execution_path}}/manageprofiles.sh -create -profileName {{profile}} -profilePath /opt/IBM/WebSphere/AppServer/profiles/{{profile}} -hostName {{was_hostname}} -isDefault {{default}}"
+  when: profile not in profiles.stdout
+
+- name: start profile {{profile}}
+  shell: "{{execution_path}}/startServer.sh server1 -profileName {{profile}}"
+  tags: [create_profile]
+  when: profile not in profiles.stdout
+

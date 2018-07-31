@@ -1,0 +1,24 @@
+---
+# tasks file for run_TDI_AL_playbook
+ - name: "starting configuration {{ AL_src }}"
+   command: "{{ tdi_al_start_cmd }}"
+   tags: start-al
+
+ - name: print start configuration and AL command
+   debug:
+     msg: "{{tdi_al_start_cmd}}"
+   tags: start-al
+
+ - name: "stoping configuration {{ AL_src }}"
+   command: "{{ tdi_al_stop_cmd }}"
+   tags: stop-conf
+
+ - name: pring stop configuration command
+   debug:
+    msg: "{{ tdi_al_stop_cmd }}"
+   tags: stop-conf
+
+# Commenting code to stop al, as after successfull completion the AL terminates. 
+# - name: "starting configuration {{ AL_src }}"
+#   command: "{{ tdi_al_stop_cmd }}"
+#   tags: stop-al

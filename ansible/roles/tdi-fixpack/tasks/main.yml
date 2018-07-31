@@ -1,0 +1,38 @@
+---
+# tasks file for tdi-fixpack
+- name: unarchive TDI711 fix pack file
+  unarchive:
+    src: "{{ tdi_install_base_path }}/7.1.1-TIV-TDI-FP0006.zip"
+    dest: "{{ tdi_install_base_path }}"
+    remote_src: yes
+  tags: fix-pack
+
+- name: remove the UpdateInstaller.jar file from TDI maintenance directory
+  file:
+    path: "{{ tdi_install_dir }}/maintenance/UpdateInstaller.jar"
+    state: absent
+  tags: fix-pack
+
+- name: "copy the mainitenance jar file from TDI fix pack directory to {{ tdi_install_dir }}/maintenance/"
+  copy:
+    src: "{{ tdi_fp_dir }}/UpdateInstaller.jar"
+    dest: "{{ tdi_install_dir }}/maintenance/"
+    mode: 0755
+    remote_src: yes
+  tags: fix-pack
+
+- name: update tdi fix-pack 
+  command: "{{ tdi_bin_dir }}/applyUpdates.sh -update TDI-7.1.1-FP0006.zip"
+  args:
+    chdir: "{{ tdi_fp_dir }}"
+  tags: fix-pack
+
+- name: checki the applied fix-pack level
+  command: "{{ tdi_install_dir }}/bin/applyUpdates.sh -queryreg"
+  register: op
+  tags: fix-pack
+
+- name: print tdi fixpack operation output
+  debug:
+    msg: "{{ op.stdout }}"
+  tags: fix-pack

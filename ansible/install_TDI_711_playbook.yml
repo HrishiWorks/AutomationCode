@@ -1,0 +1,7 @@
+# Install TDI 711 and fixpack
+---
+- hosts: tdi-server
+  become: true
+  gather_facts: false
+  roles: 
+    - tdi-base

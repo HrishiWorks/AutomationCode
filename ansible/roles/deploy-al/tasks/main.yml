@@ -1,0 +1,48 @@
+---
+# tasks file for deploy_TDI_AL_playbook
+ - name: Copy Jar File
+   copy: 
+      src: "{{ jar_file }}"
+      dest: "{{ jar_dest }}"
+      mode: 0755
+   tags:
+   - deploy
+
+ - name: copy AL
+   copy:
+      src: PutDataToPostgre.xml
+      dest: "{{ AL_dest }}"
+      mode:  0755
+      force: true
+   tags:
+   - deploy
+
+ - name: Creates directory for Proepty files
+   file: 
+      path: "{{ Dir_for_property_file }}" 
+      state: directory
+   tags:
+   - deploy
+
+ - name: copy property file.
+   template: 
+      src: "{{ Property_src }}"
+      dest: "{{ Dir_for_property_file }}/{{ Property_src }}"
+      mode: 0755
+   tags:
+   - deploy
+
+ - name: Creates directory
+   file: 
+      path: "{{ Dir_for_input_file }}" 
+      state: directory
+   tags:
+   - deploy
+
+ - name: copy the Input File
+   copy:
+      src: "{{ Input_File }}"
+      dest: "{{ Dir_for_input_file }}" 
+      mode: 0755
+   tags:
+   - deploy

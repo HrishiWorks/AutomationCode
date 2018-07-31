@@ -1,0 +1,19 @@
+---
+ - name: PostgreSQL Prerequisites
+   hosts: postgres-server
+   become: true
+   gather_facts: no
+
+   tasks:
+    - name: install libselinux-python
+      yum: name={{ item }} state=present update_cache=yes
+      with_items:
+       - libselinux-python
+       - epel-release
+
+    - name: install python-pip
+      yum: name=python-pip state=present
+
+    - name: install pexpect latest
+      pip: name=pexpect state=latest
+

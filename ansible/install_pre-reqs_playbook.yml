@@ -1,0 +1,21 @@
+# update yum cache on managed nodes.
+---
+- hosts: was-server:postgres-server:tdi-server
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: install packages
+      yum:
+        name: "{{ item }}"
+        state: present
+        update_cache: yes
+
+      with_items: 
+        - epel-release
+        - python-pip
+
+    - name: install pexpect
+      pip: 
+        name: pexpect
+        state: present

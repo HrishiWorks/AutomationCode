@@ -1,0 +1,13 @@
+Commands to execute:
+####################
+
+ansible-playbook -i inventory/hosts install_site_playbook.yml -e "profile=AppSrv01 default=true"
+
+ansible-playbook -i inventory/hosts run_site_playbook.yml --tags "start-server"
+ansible-playbook -i inventory/hosts run_site_playbook.yml --tags "deploy"
+ansible-playbook -i inventory/hosts run_site_playbook.yml --tags "stop-server"
+ansible-playbook -i inventory/hosts run_site_playbook.yml --tags "start-server"
+ansible-playbook -i inventory/hosts run_site_playbook.yml --tags "deploy,start-al"
+
+ansible-playbook -i inventory/hosts  run_site_playbook.yml --tags "stop-conf"
+ansible-playbook -i inventory/hosts  run_site_playbook.yml --tags "stop-server"

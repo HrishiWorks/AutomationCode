@@ -1,0 +1,13 @@
+---
+im_path : /tmp/installers/im
+was_path: /tmp/installers/was
+war_path: /tmp/installers/war_app
+was_hostname: mywas.gslab.com
+execution_path: /opt/IBM/WebSphere/AppServer/bin
+default: false
+was_artifacts:
+ - WAS_V8.5.5_1_OF_3.zip
+ - WAS_V8.5.5_2_OF_3.zip
+ - WAS_V8.5.5_3_OF_3.zip
+im_artifact: agent.installer.linux.gtk.x86_64_1.8.8000.20171130_1105.zip
+
